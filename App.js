@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet, Text, View } from 'react-native';
 import HomeScreen from './HomeScreen';
-import SearchScreen from './SearchScreen';
+import NotificationScreen from './NotificationScreen';
 
 const Stack = createNativeStackNavigator(); // Create a stack navigator
 
@@ -12,7 +12,7 @@ export default function App() {
     <NavigationContainer>
        <Stack.Navigator>
         <Stack.Screen name='Live Matches' component={HomeScreen} />
-        <Stack.Screen name='Search' component={SearchScreen} />
+        <Stack.Screen name='Notification Screen' component={NotificationScreen} />
         </Stack.Navigator>
     </NavigationContainer>
 

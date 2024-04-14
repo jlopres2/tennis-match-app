@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
 
+
 const HomeScreen = ({ navigation }) => {
   const [matches, setMatches] = useState([]);
 
@@ -38,8 +39,8 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Button
-        title="Search player info"
-        onPress={() => navigation.navigate('Search')}
+        title="Notification page"
+        onPress={() => navigation.navigate('Notification Screen')}
       />
       <FlatList
         data={matches}
