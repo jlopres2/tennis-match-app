@@ -15,21 +15,18 @@ const HomeScreen = ({ navigation }) => {
       const data = await response.json();
       // Extracting relevant information from the API response
       const extractedMatches = data.summaries
-      .filter(summary => summary.sport_event_status.match_status !== null && summary.sport_event_status.match_status !== "not_started")
+      .filter(summary => summary.sport_event_status.status == 'live' && summary.sport_event_status.match_status !== 'match_about_to_start')
       .map(summary => ({
         matchStatus: summary.sport_event_status.match_status,
+        liveStatus: summary.sport_event_status.status,
         player1: summary.sport_event.competitors[0].name,
         player2: summary.sport_event.competitors[1].name,
         competitionName: summary.sport_event.sport_event_context.competition.name,
-       // competitionLevel: summary.sport_event.sport_event_context.competition.level,
-      
         p1Score: summary.sport_event_status.home_score,
         p2Score: summary.sport_event_status.away_score,
       
-
-        // could there be a line in here that calls on a method which somehow checks is matchstatus
-        // is not null or not_started
-        // if that is the case, we don't want to show or do notifications for that match
+        // i think this line will sometimes lead to errors if the data has no pointType
+        pointType: summary.sport_event_status.game_state.point_type,
       }));
       setMatches(extractedMatches);
     } catch (error) {
@@ -41,8 +38,10 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.matchContainer}>
       <Text style={styles.matchText}>{item.player1} vs {item.player2}</Text>
       <Text style={styles.matchText}>Score: {item.p1Score} - {item.p2Score}</Text>
+      <Text style={styles.matchText}>Point type: {item.pointType}</Text>
       <Text style={styles.matchText}>Competition: {item.competitionName}</Text>
       <Text style={styles.matchText}>Match Status: {item.matchStatus}</Text>
+      <Text style={styles.matchText}>Status: {item.liveStatus}</Text>
     </View>
   );
 

@@ -46,7 +46,7 @@ const NotificationScreen = ({ navigation }) => {
         paddingTop: 100,
       }}>
       <Button
-        title="Press to get match updates"
+        title="Press to get match point updates"
         onPress={async () => {
           await schedulePushNotification();
         }}
@@ -55,13 +55,20 @@ const NotificationScreen = ({ navigation }) => {
   );
 }
 
-
-async function fetchMatchesFromAPI() {
+//if there was a way to make this method also call onto homescreen fetch matches
+// so that home screen also updates, that would be great
+async function fetchMatchesFromAPI() { 
   try {
     const response = await fetch('https://api.sportradar.com/tennis/trial/v3/en/schedules/live/summaries.json?api_key=61L6LUghNb8h1dABHxJc7602f0yMnC2a8PHFtJhW');
     const data = await response.json();
     const extractedMatches = data.summaries
-    .filter(summary => summary.sport_event_status.match_status !== null && summary.sport_event_status.match_status !== "not_started")
+   // .filter(summary => summary.sport_event_status.status == "live" && summary.sport_event_status.match_status !== "match_about_to_start")
+    .filter(summary => 
+      summary.sport_event_status.status == 'live' &&
+      summary.sport_event_status.match_status !== 'match_about_to_start' &&
+      summary.sport_event_status.game_state && // ensures game_state exists before accessing its properties
+      summary.sport_event_status.game_state.point_type == 'game' //its rare that it is a match point, but if it is this will notify if you put 'match' instead of game, using game for testing
+    )
     .map(summary => ({
       player1: summary.sport_event.competitors[0].name,
       player2: summary.sport_event.competitors[1].name,
@@ -70,7 +77,7 @@ async function fetchMatchesFromAPI() {
       matchStatus: summary.sport_event_status.match_status,
       p1Score: summary.sport_event_status.home_score,
       p2Score: summary.sport_event_status.away_score,
-      
+      pointType: summary.sport_event_status.game_state.point_type,
     }));
     return extractedMatches;
   } catch (error) {
@@ -85,7 +92,7 @@ async function schedulePushNotification(){
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Match Notification",
-          body: `${match.player1} vs ${match.player2}\n ${match.p1Score} - ${match.p2Score} \n ${match.competitionName}`,
+          body: `${match.player1} vs ${match.player2}\n ${match.p1Score} - ${match.p2Score}\n ${match.pointType}\n ${match.competitionName}`,
 
         },
         trigger: { seconds: 2 },
