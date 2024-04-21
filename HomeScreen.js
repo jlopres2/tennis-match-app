@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
 const HomeScreen = ({ navigation }) => {
   const [matches, setMatches] = useState([]);
 
+  // Calls fetch matches to populate page with all live matches
   useEffect(() => {
     fetchMatches();
   }, []);
@@ -24,8 +25,6 @@ const HomeScreen = ({ navigation }) => {
         competitionName: summary.sport_event.sport_event_context.competition.name,
         p1Score: summary.sport_event_status.home_score,
         p2Score: summary.sport_event_status.away_score,
-      
-        // i think this line will sometimes lead to errors if the data has no pointType
         pointType: summary.sport_event_status.game_state.point_type,
       }));
       setMatches(extractedMatches);
@@ -38,10 +37,10 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.matchContainer}>
       <Text style={styles.matchText}>{item.player1} vs {item.player2}</Text>
       <Text style={styles.matchText}>Score: {item.p1Score} - {item.p2Score}</Text>
-      <Text style={styles.matchText}>Point type: {item.pointType}</Text>
       <Text style={styles.matchText}>Competition: {item.competitionName}</Text>
       <Text style={styles.matchText}>Match Status: {item.matchStatus}</Text>
-      <Text style={styles.matchText}>Status: {item.liveStatus}</Text>
+      {/* <Text style={styles.matchText}>Status: {item.liveStatus}</Text> */}
+      <Text style={styles.matchText}>Point type: {item.pointType}</Text>
     </View>
   );
 
@@ -51,11 +50,16 @@ const HomeScreen = ({ navigation }) => {
         title="Notification page"
         onPress={() => navigation.navigate('Notification Screen')}
       />
+       <Button
+        title="Update"
+        onPress={() => fetchMatches()}
+      />
       <FlatList
         data={matches}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
+      
     </View>
   );
 };
